@@ -1,0 +1,11 @@
+name: KUAHelper
+version: '${project.version}'
+main: com.lichenaut.kuahelper.KUAHelper
+api-version: '1.20'
+depend: [Essentials, LuckPerms]
+author: lichenaut
+description: Plugin for 5kUA's miscellaneous features.
+commands:
+  vegan:
+    description: Vegan mode.
+    usage: /vegan [on|off]
