@@ -12,8 +12,8 @@ public class KHTpa implements Listener {
     public void onTpa(PreTeleportEvent e) {
         IUser p1 = e.getTeleporter();
         IUser p2 = e.getTeleportee();
-        if (p1 == null || p2 == null) return;
         if (!(p1 instanceof Player && p2 instanceof Player)) return;
+        if (((Player) p1).getWorld() != ((Player) p2).getWorld()) return;
 
         if (p1.getBase().getLocation().distance(p2.getBase().getLocation()) < 2000) {
             e.setCancelled(true);

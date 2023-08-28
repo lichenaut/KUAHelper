@@ -9,3 +9,6 @@ commands:
   vegan:
     description: Vegan mode.
     usage: /vegan [on|off]
+  map:
+    description: Get the link to the server's map.
+    usage: /map

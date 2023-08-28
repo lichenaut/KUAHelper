@@ -43,7 +43,7 @@ public class KHVeganToggle implements CommandExecutor {
         Node n3 = Node.builder(VEGAN_PERMISSIONS[2]).build();
         if (strings[0].equals("on")) {
             if (user.data().add(n1).wasSuccessful() && user.data().add(n2).wasSuccessful() && user.data().add(n3).wasSuccessful()) {
-                messageSender(sender, ChatColor.GREEN + "Vegan mode enabled.");
+                messageSender(sender, ChatColor.GREEN + "Vegan mode enabled!");
             } else messageSender(sender, ChatColor.GRAY + "Nothing changed. Vegan mode was already enabled.");
         } else {
             if (user.data().remove(n1).wasSuccessful() && user.data().remove(n2).wasSuccessful() && user.data().remove(n3).wasSuccessful()) {

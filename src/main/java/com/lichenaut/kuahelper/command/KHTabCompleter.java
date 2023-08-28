@@ -18,6 +18,7 @@ public class KHTabCompleter implements TabCompleter {
         if (sender instanceof Player) {
             if (strings.length == 0) {
                 options.add("vegan");
+                options.add("map");
             } else if (strings.length == 1) {
                 options.add("on");
                 options.add("off");

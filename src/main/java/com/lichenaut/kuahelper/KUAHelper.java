@@ -15,11 +15,13 @@ public final class KUAHelper extends JavaPlugin {
     @Override
     public void onEnable() {
         PluginManager pm = getServer().getPluginManager();
+        pm.registerEvents(new com.lichenaut.kuahelper.listening.KHFirstJoin(), this);
         pm.registerEvents(new com.lichenaut.kuahelper.listening.KHFreebie(this), this);
-        pm.registerEvents(new com.lichenaut.kuahelper.listening.KHHitKill(), this);
+        pm.registerEvents(new com.lichenaut.kuahelper.listening.KHPvP(), this);
         pm.registerEvents(new com.lichenaut.kuahelper.listening.KHTpa(), this);
 
         LuckPerms lp = LuckPermsProvider.get();
+        Objects.requireNonNull(this.getCommand("map")).setExecutor(new com.lichenaut.kuahelper.command.KHMap(this));
         Objects.requireNonNull(this.getCommand("vegan")).setExecutor(new com.lichenaut.kuahelper.command.KHVeganToggle(this, lp));
         Objects.requireNonNull(this.getCommand("vegan")).setTabCompleter(new com.lichenaut.kuahelper.command.KHTabCompleter());
     }

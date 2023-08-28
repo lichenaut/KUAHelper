@@ -4,7 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-public class KHHitKill implements Listener {
+public class KHPvP implements Listener {
 
     @EventHandler
     public void onHitKill(PlayerDeathEvent e) {
