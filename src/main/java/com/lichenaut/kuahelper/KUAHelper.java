@@ -1,5 +1,6 @@
 package com.lichenaut.kuahelper;
 
+import com.lichenaut.kuahelper.listening.KHTp;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.plugin.PluginManager;
@@ -18,7 +19,7 @@ public final class KUAHelper extends JavaPlugin {
         pm.registerEvents(new com.lichenaut.kuahelper.listening.KHFirstJoin(), this);
         pm.registerEvents(new com.lichenaut.kuahelper.listening.KHFreebie(this), this);
         pm.registerEvents(new com.lichenaut.kuahelper.listening.KHPvP(), this);
-        pm.registerEvents(new com.lichenaut.kuahelper.listening.KHTpa(), this);
+        pm.registerEvents(new KHTp(), this);
 
         LuckPerms lp = LuckPermsProvider.get();
         Objects.requireNonNull(this.getCommand("map")).setExecutor(new com.lichenaut.kuahelper.command.KHMap(this));
