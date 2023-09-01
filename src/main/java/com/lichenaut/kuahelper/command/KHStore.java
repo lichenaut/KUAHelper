@@ -9,13 +9,13 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("deprecation")
-public class KHMap extends KHCommandUtil implements CommandExecutor {
+public class KHStore extends KHCommandUtil implements CommandExecutor {
 
-    public KHMap(KUAHelper plugin) {super(plugin);}
+    public KHStore(KUAHelper plugin) {super(plugin);}
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        messageSender(sender, ChatColor.GRAY + "Map: " + ChatColor.WHITE + "https://lichenaut.com/map");
+        messageSender(sender, ChatColor.GRAY + "Store: " + ChatColor.GREEN + "https://5kua-store.tebex.io/");
         return true;
     }
 }

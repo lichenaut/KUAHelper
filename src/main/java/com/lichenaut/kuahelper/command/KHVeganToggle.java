@@ -27,16 +27,16 @@ public class KHVeganToggle implements CommandExecutor {
     @SuppressWarnings("deprecation")
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (!(sender instanceof Player)) {messageSender(sender, ChatColor.RED + "This command can only be run by a player.");return true;}
+        if (!(sender instanceof Player)) {messageSender(sender, ChatColor.RED + "This command can only be run by a player.");return false;}
         if (strings.length != 1) {messageSender(sender, "/" + ChatColor.GREEN + "vegan " + ChatColor.WHITE + "<" + ChatColor.GREEN + "on" + ChatColor.WHITE + "|"
                 + ChatColor.GREEN + "off" + ChatColor.WHITE + ">" + ChatColor.GRAY
                 + " - Turn on/off vegan fishing, archaeology, and infested block spawning.\n" + ChatColor.WHITE + "/" + ChatColor.GREEN + "va help" + ChatColor.GRAY
-                + " - Links to the vegan crafting recipes and mechanics guide.");return true;}
+                + " - Links to the vegan crafting recipes and mechanics guide.");return false;}
         if (!strings[0].equals("on") && !strings[0].equals("off")) {messageSender(sender, ChatColor.GRAY + "Invalid argument. Please use either \"" + ChatColor.WHITE + "on" +
-                ChatColor.GRAY + "\" or \"" + ChatColor.WHITE + "off" + ChatColor.GRAY + "\".");return true;}
+                ChatColor.GRAY + "\" or \"" + ChatColor.WHITE + "off" + ChatColor.GRAY + "\".");return false;}
 
         User user = lp.getUserManager().getUser(sender.getName());
-        if (user == null) {messageSender(sender, ChatColor.RED + "An error occurred while retrieving your user data. Please contact an administrator.");return true;}
+        if (user == null) {messageSender(sender, ChatColor.RED + "An error occurred while retrieving your user data. Please contact an administrator.");return false;}
 
         Node n1 = Node.builder(VEGAN_PERMISSIONS[0]).build();
         Node n2 = Node.builder(VEGAN_PERMISSIONS[1]).build();
