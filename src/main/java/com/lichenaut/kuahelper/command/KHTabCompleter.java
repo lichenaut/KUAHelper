@@ -17,14 +17,15 @@ public class KHTabCompleter implements TabCompleter {
         List<String> options = new ArrayList<>();
         if (sender instanceof Player) {
             if (strings.length == 0) {
-                options.add("vegan");
+                options.add("kuareload");
                 options.add("map");
                 options.add("send");
-                options.add("verify");
                 options.add("store");
+                options.add("vegan");
+                options.add("verify");
             } else if (strings.length == 1) {
-                options.add("on");
                 options.add("off");
+                options.add("on");
             }
         }
         return options;

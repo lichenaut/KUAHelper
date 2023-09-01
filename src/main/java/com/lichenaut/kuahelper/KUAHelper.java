@@ -26,19 +26,19 @@ public final class KUAHelper extends JavaPlugin {
         pm.registerEvents(new KHTp(lp), this);
 
         Objects.requireNonNull(this.getCommand("map")).setExecutor(new com.lichenaut.kuahelper.command.KHMap(this));
+        Objects.requireNonNull(this.getCommand("kuareload")).setExecutor(new com.lichenaut.kuahelper.command.KHReload(this));
         Objects.requireNonNull(this.getCommand("send")).setExecutor(new com.lichenaut.kuahelper.command.KHSend(this));
         Objects.requireNonNull(this.getCommand("store")).setExecutor(new com.lichenaut.kuahelper.command.KHStore(this));
         Objects.requireNonNull(this.getCommand("vegan")).setExecutor(new com.lichenaut.kuahelper.command.KHVeganToggle(this, lp));
-        Objects.requireNonNull(this.getCommand("verify")).setExecutor(new com.lichenaut.kuahelper.command.KHVerify(this));
+        updateMails();
 
         Objects.requireNonNull(this.getCommand("vegan")).setTabCompleter(new com.lichenaut.kuahelper.command.KHTabCompleter());
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public void onDisable() {
-        for (Player p : getServer().getOnlinePlayers()) p.kickPlayer("Server closed");
-    }
+    public void onDisable() {for (Player p : getServer().getOnlinePlayers()) p.kickPlayer("Server closed");}
 
     public Logger getLog() {return log;}
+    public void updateMails() {Objects.requireNonNull(this.getCommand("verify")).setExecutor(new com.lichenaut.kuahelper.command.KHVerify(this));}
 }

@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 @SuppressWarnings("deprecation")
 public class KHCommandUtil {
 
-    private final KUAHelper plugin;
+    protected final KUAHelper plugin;
 
     public KHCommandUtil(KUAHelper plugin) {this.plugin = plugin;}
 

@@ -21,3 +21,6 @@ commands:
   store:
     description: Get the link to the server's store.
     usage: /store
+  kuareload:
+    description: Reload the valid e-mail types.
+    usage: /kuareload

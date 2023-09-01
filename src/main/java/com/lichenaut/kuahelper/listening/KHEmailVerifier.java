@@ -20,12 +20,14 @@ import org.bukkit.scheduler.BukkitTask;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
 public class KHEmailVerifier implements Listener {
@@ -33,8 +35,7 @@ public class KHEmailVerifier implements Listener {
     private final KUAHelper plugin;
     private final LuckPerms lp;
     private final Essentials essentials;
-    private final HashSet<String> validMails;
-    private final HashMap<String, InheritanceNode> uniMap;
+    private final HashMap<String, InheritanceNode> validUnis;
     private final HashMap<UUID, GameMode> preVerificationPlayers;
     private final HashMap<UUID, String> verificationCodes;
     private final HashMap<UUID, HashSet<BukkitTask>> playerTasks;
@@ -45,30 +46,11 @@ public class KHEmailVerifier implements Listener {
         this.plugin = plugin;
         this.lp = lp;
         essentials = (Essentials) plugin.getServer().getPluginManager().getPlugin("Essentials");
-        validMails = new HashSet<>();
-        validMails.add("ccd.edu");
-        validMails.add("ch.university");
-        validMails.add("colostate.edu");
-        validMails.add("denvercollegeofnursing.edu");
-        validMails.add("du.edu");
-        validMails.add("emilygriffith.edu");
-        validMails.add("msudenver.edu");
-        validMails.add("pmi.edu");
-        validMails.add("regis.edu");
-        validMails.add("archden.org");
-        validMails.add("ucdenver.edu");
-        uniMap = new HashMap<>();
-        uniMap.put("ccd.edu", InheritanceNode.builder("ccd").build());
-        uniMap.put("ch.university", InheritanceNode.builder("chu").build());
-        uniMap.put("colostate.edu", InheritanceNode.builder("csu").build());
-        uniMap.put("denvercollegeofnursing.edu", InheritanceNode.builder("dcn").build());
-        uniMap.put("du.edu", InheritanceNode.builder("du").build());
-        uniMap.put("emilygriffith.edu", InheritanceNode.builder("eg").build());
-        uniMap.put("msudenver.edu", InheritanceNode.builder("msu").build());
-        uniMap.put("pmi.edu", InheritanceNode.builder("pmi").build());
-        uniMap.put("regis.edu", InheritanceNode.builder("ru").build());
-        uniMap.put("archden.org", InheritanceNode.builder("sjv").build());
-        uniMap.put("ucdenver.edu", InheritanceNode.builder("ucd").build());
+        try {validUnis = (HashMap<String, InheritanceNode>) Files.readAllLines(Path.of(plugin.getDataFolder() + File.separator + "valid_mails.txt"), StandardCharsets.UTF_8)
+                    .stream()
+                    .map(line -> line.split(",", 2))
+                    .collect(Collectors.toMap(parts -> parts[0], parts -> InheritanceNode.builder(parts[1]).build()));
+        } catch (IOException e) {throw new RuntimeException(e);}
         preVerificationPlayers = new HashMap<>();
         verificationCodes = new HashMap<>();
         playerTasks = new HashMap<>();
@@ -98,7 +80,7 @@ public class KHEmailVerifier implements Listener {
         Player p = e.getPlayer();
         User user = lp.getUserManager().getUser(p.getName());
         if (user != null) {
-            uniMap.forEach((k, v) -> user.data().remove(v));
+            validUnis.forEach((k, v) -> user.data().remove(v));
             lp.getUserManager().saveUser(user);
         }
 
@@ -113,7 +95,7 @@ public class KHEmailVerifier implements Listener {
         Player p = e.getPlayer();
         User user = lp.getUserManager().getUser(p.getName());
         if (user != null) {
-            uniMap.forEach((k, v) -> user.data().remove(v));
+            validUnis.forEach((k, v) -> user.data().remove(v));
             lp.getUserManager().saveUser(user);
         }
 
@@ -142,13 +124,13 @@ public class KHEmailVerifier implements Listener {
 
             String email = e.getMessage().split(" ")[1];
             int length = email.length();
-            if (email.contains(" ") || length < 8 || length > 50 || !email.contains("@") || email.endsWith("@") || !validMails.contains(email.split("@")[1])) {
+            if (email.contains(" ") || length < 8 || length > 50 || !email.contains("@") || email.endsWith("@") || !validUnis.containsKey(email.split("@")[1])) {
                 e.setCancelled(true);
                 p.sendMessage(ChatColor.GRAY + "Invalid e-mail. Please use your school e-mail.");
             } else {
                 sendEmail(p, email);
-                uniMap.forEach((k, v) -> user.data().remove(v));
-                user.data().add(uniMap.get(email.split("@")[1]));
+                validUnis.forEach((k, v) -> user.data().remove(v));
+                user.data().add(validUnis.get(email.split("@")[1]));
                 lp.getUserManager().saveUser(user);
             }
         } else if (msg.startsWith("/verify ")) {
