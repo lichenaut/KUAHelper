@@ -12,3 +12,9 @@ commands:
   map:
     description: Get the link to the server's map.
     usage: /map
+  send:
+    description: Send a code to the provided e-mail address.
+    usage: /send <e-mail>
+  verify:
+    description: Verify a code.
+    usage: /verify <code>
