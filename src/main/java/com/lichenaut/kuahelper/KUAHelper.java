@@ -46,7 +46,7 @@ public final class KUAHelper extends JavaPlugin {
         try {Class.forName("org.apache.logging.log4j.core.filter.AbstractFilter");
             org.apache.logging.log4j.core.Logger rootLogger;
             rootLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
-            rootLogger.addFilter(new KHFilter());
+            rootLogger.addFilter(new KHFilter(this));
         } catch (ClassNotFoundException e) {throw new RuntimeException(e);}
 
         verifiedCache = new HashSet<>();
