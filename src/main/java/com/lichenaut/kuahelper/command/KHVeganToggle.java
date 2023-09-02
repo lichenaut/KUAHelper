@@ -1,6 +1,7 @@
 package com.lichenaut.kuahelper.command;
 
 import com.lichenaut.kuahelper.KUAHelper;
+import com.lichenaut.kuahelper.util.KHCommandUtil;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
@@ -11,17 +12,19 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class KHVeganToggle implements CommandExecutor {
+public class KHVeganToggle extends KHCommandUtil implements CommandExecutor {
 
-    private final KUAHelper plugin;
     private final LuckPerms lp;
-    String[] VEGAN_PERMISSIONS = {"vegalts.fishing", "vegalts.archaeology", "vegalts.infested"};
+    private final Node n1;
+    private final Node n2;
+    private final Node n3;
 
-    public KHVeganToggle(KUAHelper plugin, LuckPerms lp) {this.plugin = plugin;this.lp = lp;}
-
-    @SuppressWarnings("deprecation")
-    public void messageSender(CommandSender sender, String message) {
-        if (sender instanceof Player) sender.sendMessage(message); else plugin.getLog().info(ChatColor.stripColor(message));
+    public KHVeganToggle(KUAHelper plugin, LuckPerms lp) {
+        super(plugin);
+        this.lp = lp;
+        n1 = Node.builder("vegalts.fishing").build();
+        n2 = Node.builder("vegalts.archaeology").build();
+        n3 = Node.builder("vegalts.infested").build();
     }
 
     @SuppressWarnings("deprecation")
@@ -38,9 +41,6 @@ public class KHVeganToggle implements CommandExecutor {
         User user = lp.getUserManager().getUser(sender.getName());
         if (user == null) {messageSender(sender, ChatColor.RED + "An error occurred while retrieving your user data. Please contact an administrator.");return false;}
 
-        Node n1 = Node.builder(VEGAN_PERMISSIONS[0]).build();
-        Node n2 = Node.builder(VEGAN_PERMISSIONS[1]).build();
-        Node n3 = Node.builder(VEGAN_PERMISSIONS[2]).build();
         if (strings[0].equals("on")) {
             if (user.data().add(n1).wasSuccessful() && user.data().add(n2).wasSuccessful() && user.data().add(n3).wasSuccessful()) {
                 messageSender(sender, ChatColor.GREEN + "Vegan mode enabled!");

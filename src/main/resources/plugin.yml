@@ -8,7 +8,6 @@ description: Plugin for 5kUA's miscellaneous features.
 commands:
   vegan:
     description: Vegan mode.
-    usage: /vegan [on|off]
   map:
     description: Get the link to the server's map.
     usage: /map
@@ -24,3 +23,5 @@ commands:
   kuareload:
     description: Reload the valid e-mail types.
     usage: /kuareload
+  rememberme:
+    description: Toggle verification code remembering (8 hours.

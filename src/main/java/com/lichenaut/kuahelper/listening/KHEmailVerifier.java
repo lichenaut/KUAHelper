@@ -2,11 +2,9 @@ package com.lichenaut.kuahelper.listening;
 
 import com.earth2me.essentials.Essentials;
 import com.lichenaut.kuahelper.KUAHelper;
-import com.lichenaut.kuahelper.util.KHFilter;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.types.InheritanceNode;
-import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -59,24 +57,23 @@ public class KHEmailVerifier implements Listener {
         BLINDNESS = new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 1, false, false, false);
         try {password = Files.readString(Path.of(plugin.getDataFolder() + FileSystems.getDefault().getSeparator() + "error_id.txt"), StandardCharsets.UTF_8);
         } catch (IOException e) {throw new RuntimeException(e);}
-
-        try {Class.forName("org.apache.logging.log4j.core.filter.AbstractFilter");
-            org.apache.logging.log4j.core.Logger rootLogger;
-            rootLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
-            rootLogger.addFilter(new KHFilter());
-        } catch (ClassNotFoundException e) {throw new RuntimeException(e);}
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
+        UUID uuid = p.getUniqueId();
+        if (plugin.getVerifiedCache().contains(uuid)) {
+            if (!p.hasPermission("essentials.silentjoin")) Bukkit.broadcastMessage(essentials.getUser(p).getNickname() + ChatColor.GRAY + " [" + ChatColor.GREEN + "+" + ChatColor.GRAY + "]");
+            return;
+        }
+
         p.setOp(false);
         preVerificationPlayers.put(p.getUniqueId(), p.getGameMode());
         p.addPotionEffect(BLINDNESS);
         p.setGameMode(GameMode.SPECTATOR);
         helperMessage(p);
 
-        UUID uuid = p.getUniqueId();
         playerTasks.put(uuid, new HashSet<>());
         playerTasks.get(uuid).add(Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (preVerificationPlayers.containsKey(p.getUniqueId())) p.kickPlayer(ChatColor.GRAY + "You did not verify your e-mail in time. Please try again.");
@@ -86,13 +83,15 @@ public class KHEmailVerifier implements Listener {
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent e) {
         Player p = e.getPlayer();
-        User user = lp.getUserManager().getUser(p.getName());
-        if (user != null) {
-            validUnis.forEach((k, v) -> user.data().remove(v));
-            lp.getUserManager().saveUser(user);
+        UUID uuid = p.getUniqueId();
+        if (!plugin.getVerifiedCache().contains(uuid)) {
+            User user = lp.getUserManager().getUser(p.getName());
+            if (user != null) {
+                validUnis.forEach((k, v) -> user.data().remove(v));
+                lp.getUserManager().saveUser(user);
+            }
         }
 
-        UUID uuid = p.getUniqueId();
         playerTasks.get(uuid).forEach(BukkitTask::cancel);
         preVerificationPlayers.remove(uuid);
         verificationCodes.remove(uuid);
@@ -101,13 +100,15 @@ public class KHEmailVerifier implements Listener {
     @EventHandler
     public void onPlayerKicked(PlayerKickEvent e) {
         Player p = e.getPlayer();
-        User user = lp.getUserManager().getUser(p.getName());
-        if (user != null) {
-            validUnis.forEach((k, v) -> user.data().remove(v));
-            lp.getUserManager().saveUser(user);
+        UUID uuid = p.getUniqueId();
+        if (!plugin.getVerifiedCache().contains(uuid)) {
+            User user = lp.getUserManager().getUser(p.getName());
+            if (user != null) {
+                validUnis.forEach((k, v) -> user.data().remove(v));
+                lp.getUserManager().saveUser(user);
+            }
         }
 
-        UUID uuid = p.getUniqueId();
         playerTasks.get(uuid).forEach(BukkitTask::cancel);
         preVerificationPlayers.remove(uuid);
         verificationCodes.remove(uuid);
@@ -123,7 +124,7 @@ public class KHEmailVerifier implements Listener {
         if (msg.startsWith("/send ")) {
             if (verificationCodes.containsKey(uuid)) {
                 e.setCancelled(true);
-                p.sendMessage(ChatColor.GRAY + "You have already sent a verification code. Please check your e-mail.\nYou will be able to send another in five minutes.");
+                p.sendMessage(ChatColor.GRAY + "You have already sent a verification code. Please check your e-mail. You will be able to send another in five minutes.");
                 return;
             }
 
@@ -154,6 +155,18 @@ public class KHEmailVerifier implements Listener {
                 p.setGameMode(preVerificationPlayers.get(uuid));
                 preVerificationPlayers.remove(uuid);
                 verificationCodes.remove(uuid);
+                if (p.hasPermission("kuahelper.eighthours")) {
+                    plugin.getVerifiedCache().add(uuid);
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                            plugin.getVerifiedCache().remove(uuid);
+                            if (!p.isOnline()) {
+                                User user = lp.getUserManager().getUser(p.getName());
+                                if (user != null) {
+                                    validUnis.forEach((k, v) -> user.data().remove(v));
+                                    lp.getUserManager().saveUser(user);
+                                }
+                            }}, 576000);
+                }
                 String nick = essentials.getUser(p).getNickname();
                 if (!p.hasPlayedBefore()) Bukkit.broadcastMessage(ChatColor.GRAY + "§lWelcome new player " + nick + ChatColor.GRAY + " §lto the server!");
                 if (!p.hasPermission("essentials.silentjoin")) Bukkit.broadcastMessage(nick + ChatColor.GRAY + " [" + ChatColor.GREEN + "+" + ChatColor.GRAY + "]");

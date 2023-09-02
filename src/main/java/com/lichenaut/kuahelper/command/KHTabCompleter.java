@@ -17,8 +17,8 @@ public class KHTabCompleter implements TabCompleter {
         List<String> options = new ArrayList<>();
         if (sender instanceof Player) {
             if (strings.length == 0) {
-                options.add("kuareload");
                 options.add("map");
+                options.add("rememberme");
                 options.add("send");
                 options.add("store");
                 options.add("vegan");
