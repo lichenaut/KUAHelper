@@ -224,7 +224,7 @@ public class KHEmailVerifier implements Listener {
             message.setFrom(new InternetAddress(serverEmail));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
             message.setSubject("Verification Code");
-            message.setText(code);
+            message.setText(code + "\n \nSent by Minecraft server '5kUA: Denver Collegiate Minecraft'. If you did not request this code, please ignore this e-mail.");
             Transport.send(message);
         } catch (MessagingException e) {
             e.printStackTrace();
