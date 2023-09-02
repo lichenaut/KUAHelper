@@ -94,7 +94,7 @@ public class KHEmailVerifier implements Listener {
             plugin.getMailCache().remove(uuid);
         }
 
-        playerTasks.get(uuid).forEach(BukkitTask::cancel);
+        if (playerTasks.containsKey(uuid)) playerTasks.get(uuid).forEach(BukkitTask::cancel);
         preVerificationPlayers.remove(uuid);
         verificationCodes.remove(uuid);
     }
@@ -112,7 +112,7 @@ public class KHEmailVerifier implements Listener {
             plugin.getMailCache().remove(uuid);
         }
 
-        playerTasks.get(uuid).forEach(BukkitTask::cancel);
+        if (playerTasks.containsKey(uuid)) playerTasks.get(uuid).forEach(BukkitTask::cancel);
         preVerificationPlayers.remove(uuid);
         verificationCodes.remove(uuid);
     }
