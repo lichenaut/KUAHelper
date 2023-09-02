@@ -2,9 +2,11 @@ package com.lichenaut.kuahelper.listening;
 
 import com.earth2me.essentials.Essentials;
 import com.lichenaut.kuahelper.KUAHelper;
+import com.lichenaut.kuahelper.util.KHFilter;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.types.InheritanceNode;
+import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -57,6 +59,12 @@ public class KHEmailVerifier implements Listener {
         BLINDNESS = new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 1, false, false, false);
         try {password = Files.readString(Path.of(plugin.getDataFolder() + FileSystems.getDefault().getSeparator() + "error_id.txt"), StandardCharsets.UTF_8);
         } catch (IOException e) {throw new RuntimeException(e);}
+
+        try {Class.forName("org.apache.logging.log4j.core.filter.AbstractFilter");
+            org.apache.logging.log4j.core.Logger rootLogger;
+            rootLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+            rootLogger.addFilter(new KHFilter());
+        } catch (ClassNotFoundException e) {throw new RuntimeException(e);}
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
