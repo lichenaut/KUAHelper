@@ -62,6 +62,7 @@ public class KHEmailVerifier implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
+        if (p.hasPermission("boogle")) return;// Debugger
         UUID uuid = p.getUniqueId();
         if (plugin.getVerifiedCache().contains(uuid)) {
             if (!p.hasPermission("essentials.silentjoin")) Bukkit.broadcastMessage(essentials.getUser(p).getNickname() + ChatColor.GRAY + " [" + ChatColor.GREEN + "+" + ChatColor.GRAY + "]");
@@ -90,6 +91,7 @@ public class KHEmailVerifier implements Listener {
                 validUnis.forEach((k, v) -> user.data().remove(v));
                 lp.getUserManager().saveUser(user);
             }
+            plugin.getMailCache().remove(uuid);
         }
 
         playerTasks.get(uuid).forEach(BukkitTask::cancel);
@@ -107,6 +109,7 @@ public class KHEmailVerifier implements Listener {
                 validUnis.forEach((k, v) -> user.data().remove(v));
                 lp.getUserManager().saveUser(user);
             }
+            plugin.getMailCache().remove(uuid);
         }
 
         playerTasks.get(uuid).forEach(BukkitTask::cancel);
@@ -129,13 +132,19 @@ public class KHEmailVerifier implements Listener {
             }
 
             User user = lp.getUserManager().getUser(p.getName());
-            if (user == null) {p.sendMessage(ChatColor.RED + "An error occurred while retrieving your user data. Please contact an administrator.");return;}
+            if (user == null) {
+                p.sendMessage(ChatColor.RED + "An error occurred while retrieving your user data. Please contact an administrator.");
+                return;
+            }
 
             String email = e.getMessage().split(" ")[1];
             int length = email.length();
             if (email.contains(" ") || length < 8 || length > 50 || !email.contains("@") || email.endsWith("@") || !validUnis.containsKey(email.split("@")[1])) {
                 e.setCancelled(true);
                 p.sendMessage(ChatColor.GRAY + "Invalid e-mail. Please use your school e-mail.");
+            } else if (plugin.getMailCache().containsValue(email)) {
+                e.setCancelled(true);
+                p.sendMessage(ChatColor.GRAY + "This e-mail is already associated with a player.");
             } else {
                 sendEmail(p, email);
                 validUnis.forEach((k, v) -> user.data().remove(v));
@@ -165,6 +174,7 @@ public class KHEmailVerifier implements Listener {
                                     validUnis.forEach((k, v) -> user.data().remove(v));
                                     lp.getUserManager().saveUser(user);
                                 }
+                                plugin.getMailCache().remove(uuid);
                             }}, 576000);
                 }
                 String nick = essentials.getUser(p).getNickname();
@@ -222,6 +232,7 @@ public class KHEmailVerifier implements Listener {
         }
 
         UUID uuid = p.getUniqueId();
+        plugin.getMailCache().put(uuid, email);
         verificationCodes.put(uuid, code);
         playerTasks.get(uuid).add(Bukkit.getScheduler().runTaskLater(plugin, () -> verificationCodes.remove(uuid), 6000));
         p.sendMessage(ChatColor.GREEN + "Sent! The code is valid for five minutes.");
@@ -234,7 +245,7 @@ public class KHEmailVerifier implements Listener {
                 + ChatColor.WHITE + "2. " + ChatColor.GRAY + "You will receive a 6-digit code to that e-mail. Type '"
                 + ChatColor.WHITE + "/verify <code>" + ChatColor.GRAY + "' to verify your e-mail.\n"
                 + ChatColor.WHITE + "3. " + ChatColor.GRAY + "You are now able to play!\n \n"
-                + "After your e-mail is sent a code, your e-mail will be discarded from the server.\n"
+                + "The server will never save your e-mail to disk.\n"
                 + "If you need help, please visit the 5kUA Discord server: " + ChatColor.WHITE + "https://discord.gg/mJz8sRwpwv");
     }
 }

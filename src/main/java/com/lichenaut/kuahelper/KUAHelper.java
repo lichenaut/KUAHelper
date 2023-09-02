@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.UUID;
@@ -18,6 +19,7 @@ public final class KUAHelper extends JavaPlugin {
 
     private final Logger log = getLogger();
     private HashSet<UUID> verifiedCache;
+    private HashMap<UUID, String> mailCache; //One e-mail should not be used for multiple accounts
 
     @Override
     public void onEnable() {
@@ -48,6 +50,7 @@ public final class KUAHelper extends JavaPlugin {
         } catch (ClassNotFoundException e) {throw new RuntimeException(e);}
 
         verifiedCache = new HashSet<>();
+        mailCache = new HashMap<>();
     }
 
     @SuppressWarnings("deprecation")
@@ -57,4 +60,5 @@ public final class KUAHelper extends JavaPlugin {
     public Logger getLog() {return log;}
     public void updateMails() {Objects.requireNonNull(this.getCommand("verify")).setExecutor(new com.lichenaut.kuahelper.command.KHVerify(this));}
     public HashSet<UUID> getVerifiedCache() {return verifiedCache;}
+    public HashMap<UUID, String> getMailCache() {return mailCache;}
 }

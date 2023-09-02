@@ -37,12 +37,12 @@ public class KHRememberMe extends KHCommandUtil implements CommandExecutor {
 
         if (strings[0].equals("on")) {
             if (user.data().add(n).wasSuccessful()) {
-                messageSender(sender, ChatColor.GREEN + "Your verifications will now be remembered for eight hours.");
+                messageSender(sender, ChatColor.GREEN + "Future verifications will now be remembered for eight hours.");
             } else messageSender(sender, ChatColor.GRAY + "Nothing changed. It was already enabled.");
         } else {
             if (user.data().remove(n).wasSuccessful()) {
                 plugin.getVerifiedCache().remove(user.getUniqueId());
-                messageSender(sender, ChatColor.GREEN + "Your verifications will no longer be remembered for eight hours.");
+                messageSender(sender, ChatColor.GREEN + "Future verifications will no longer be remembered for eight hours.");
             } else messageSender(sender, ChatColor.GRAY + "Nothing changed. It was already disabled.");
         }
         lp.getUserManager().saveUser(user);
