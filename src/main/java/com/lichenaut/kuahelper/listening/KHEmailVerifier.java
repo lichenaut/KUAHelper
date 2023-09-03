@@ -176,13 +176,15 @@ public class KHEmailVerifier implements Listener {
                                 plugin.getMailCache().remove(uuid);
                             }}, 576000);
                 }
-                String nick = essentials.getUser(p).getNickname();
-                if (nick == null) nick = p.getName();
-                if (!p.hasPlayedBefore()) Bukkit.broadcastMessage(ChatColor.GREEN + "§lWelcome new player " + ChatColor.RESET + nick + ChatColor.GREEN + " §lto the server!");
+                String nick = p.getName();
+                if (!p.hasPlayedBefore()) {
+                    Bukkit.broadcastMessage(ChatColor.GREEN + "§lWelcome new player " + ChatColor.RESET + nick + ChatColor.GREEN + " §lto the server!");
+                    p.sendMessage(ChatColor.GRAY + "Welcome, leave spawn's protection when you're ready!");
+                }
                 if (!p.hasPermission("essentials.silentjoin")) {
                     Bukkit.broadcastMessage(nick + ChatColor.GRAY + " [" + ChatColor.GREEN + "+" + ChatColor.GRAY + "]");
                     p.sendMessage(ChatColor.GRAY + "Check out the '" + ChatColor.WHITE + "/rules" + ChatColor.GRAY + "', our '" + ChatColor.WHITE + "/discord"
-                            + ChatColor.GRAY + "', and the '" + ChatColor.WHITE + "/help" + ChatColor.GRAY + "' command. Have fun!");
+                            + ChatColor.GRAY + "', and the '" + ChatColor.WHITE + "/help" + ChatColor.GRAY + "' command!");
                 }
             } else {
                 e.setCancelled(true);

@@ -27,7 +27,6 @@ public final class KUAHelper extends JavaPlugin {
         LuckPerms lp = LuckPermsProvider.get();
 
         pm.registerEvents(new com.lichenaut.kuahelper.listening.KHEmailVerifier(this, lp), this);
-        pm.registerEvents(new com.lichenaut.kuahelper.listening.KHFirstJoin(), this);
         pm.registerEvents(new com.lichenaut.kuahelper.listening.KHFreebie(this), this);
         pm.registerEvents(new com.lichenaut.kuahelper.listening.KHPvP(), this);
         pm.registerEvents(new KHTp(lp), this);
