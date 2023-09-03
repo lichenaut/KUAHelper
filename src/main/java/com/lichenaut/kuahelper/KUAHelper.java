@@ -37,10 +37,12 @@ public final class KUAHelper extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("rememberme")).setExecutor(new com.lichenaut.kuahelper.command.KHRememberMe(this, lp));
         Objects.requireNonNull(this.getCommand("send")).setExecutor(new com.lichenaut.kuahelper.command.KHSend(this));
         Objects.requireNonNull(this.getCommand("store")).setExecutor(new com.lichenaut.kuahelper.command.KHStore(this));
+        Objects.requireNonNull(this.getCommand("tips")).setExecutor(new com.lichenaut.kuahelper.command.KHTipsToggle(this, lp));
         Objects.requireNonNull(this.getCommand("vegan")).setExecutor(new com.lichenaut.kuahelper.command.KHVeganToggle(this, lp));
         updateMails();
 
         Objects.requireNonNull(this.getCommand("rememberme")).setTabCompleter(new com.lichenaut.kuahelper.command.KHTabCompleter());
+        Objects.requireNonNull(this.getCommand("tips")).setTabCompleter(new com.lichenaut.kuahelper.command.KHTabCompleter());
         Objects.requireNonNull(this.getCommand("vegan")).setTabCompleter(new com.lichenaut.kuahelper.command.KHTabCompleter());
 
         try {Class.forName("org.apache.logging.log4j.core.filter.AbstractFilter");

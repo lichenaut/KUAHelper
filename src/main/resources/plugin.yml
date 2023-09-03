@@ -25,3 +25,5 @@ commands:
     usage: /kuareload
   rememberme:
     description: Toggle verification code remembering (8 hours.
+  tips:
+    description: Toggle 5kUA tips.

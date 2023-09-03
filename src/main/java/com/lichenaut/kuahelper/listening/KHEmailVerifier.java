@@ -62,7 +62,6 @@ public class KHEmailVerifier implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
-        if (p.hasPermission("boogle")) return;// Debugger
         UUID uuid = p.getUniqueId();
         if (plugin.getVerifiedCache().contains(uuid)) {
             if (!p.hasPermission("essentials.silentjoin")) Bukkit.broadcastMessage(essentials.getUser(p).getNickname() + ChatColor.GRAY + " [" + ChatColor.GREEN + "+" + ChatColor.GRAY + "]");
@@ -178,8 +177,13 @@ public class KHEmailVerifier implements Listener {
                             }}, 576000);
                 }
                 String nick = essentials.getUser(p).getNickname();
-                if (!p.hasPlayedBefore()) Bukkit.broadcastMessage(ChatColor.GRAY + "§lWelcome new player " + nick + ChatColor.GRAY + " §lto the server!");
-                if (!p.hasPermission("essentials.silentjoin")) Bukkit.broadcastMessage(nick + ChatColor.GRAY + " [" + ChatColor.GREEN + "+" + ChatColor.GRAY + "]");
+                if (nick == null) nick = p.getName();
+                if (!p.hasPlayedBefore()) Bukkit.broadcastMessage(ChatColor.GREEN + "§lWelcome new player " + ChatColor.RESET + nick + ChatColor.GREEN + " §lto the server!");
+                if (!p.hasPermission("essentials.silentjoin")) {
+                    Bukkit.broadcastMessage(nick + ChatColor.GRAY + " [" + ChatColor.GREEN + "+" + ChatColor.GRAY + "]");
+                    p.sendMessage(ChatColor.GRAY + "Check out the '" + ChatColor.WHITE + "/rules" + ChatColor.GRAY + "', our '" + ChatColor.WHITE + "/discord"
+                            + ChatColor.GRAY + "', and the '" + ChatColor.WHITE + "/help" + ChatColor.GRAY + "' command. Have fun!");
+                }
             } else {
                 e.setCancelled(true);
                 p.sendMessage(ChatColor.GRAY + "Invalid code. Please try again.");
@@ -240,11 +244,10 @@ public class KHEmailVerifier implements Listener {
 
     private void helperMessage(Player p) {
         p.sendMessage(ChatColor.GRAY + "Welcome! Please verify your e-mail to continue.\n \n"
-                + ChatColor.WHITE + "1. " + ChatColor.GRAY + "Type '" + ChatColor.WHITE + "/send <your-email>" + ChatColor.GRAY
-                + "' where '" + ChatColor.WHITE + "<your-email>" + ChatColor.GRAY + "' is your school e-mail address.\n"
+                + ChatColor.WHITE + "1. " + ChatColor.GRAY + "Type '" + ChatColor.WHITE + "/send your-email" + ChatColor.GRAY
+                + "' where '" + ChatColor.WHITE + "your-email" + ChatColor.GRAY + "' is your school e-mail address.\n"
                 + ChatColor.WHITE + "2. " + ChatColor.GRAY + "You will receive a 6-digit code to that e-mail. Type '"
-                + ChatColor.WHITE + "/verify <code>" + ChatColor.GRAY + "' to verify your e-mail.\n"
-                + ChatColor.WHITE + "3. " + ChatColor.GRAY + "You are now able to play!\n \n"
+                + ChatColor.WHITE + "/verify your-code" + ChatColor.GRAY + "' to verify your e-mail. You are now able to play!\n \n"
                 + "The server will never save your e-mail to disk.\n"
                 + "If you need help, please visit the 5kUA Discord server: " + ChatColor.WHITE + "https://discord.gg/mJz8sRwpwv");
     }

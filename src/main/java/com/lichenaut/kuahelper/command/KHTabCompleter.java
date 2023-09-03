@@ -21,6 +21,7 @@ public class KHTabCompleter implements TabCompleter {
                 options.add("rememberme");
                 options.add("send");
                 options.add("store");
+                options.add("tips");
                 options.add("vegan");
                 options.add("verify");
             } else if (strings.length == 1) {

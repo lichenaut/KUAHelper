@@ -15,7 +15,7 @@ public class KHMap extends KHCommandUtil implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        messageSender(sender, ChatColor.GRAY + "Map: " + ChatColor.WHITE + "http://174.136.202.30:8100");
+        messageSender(sender, ChatColor.GRAY + "Map: " + ChatColor.WHITE + "http://5kua.us.to:8100");
         return true;
     }
 }
