@@ -26,8 +26,7 @@ public class KHFilter extends AbstractFilter {
     @Override
     public Result filter(LogEvent event) {
         String msg = event.getMessage().getFormattedMessage();
-        if (msg.contains("/send") || msg.contains("ERROR]: [BuycraftX]") // Gets rid of BuycraftX bug messages
-                || validUnis.stream().anyMatch(uni -> event.getMessage().getFormattedMessage().contains("@" + uni))) return Result.DENY;
+        if (msg.contains("/send") || validUnis.stream().anyMatch(uni -> event.getMessage().getFormattedMessage().contains("@" + uni))) return Result.DENY;
         return Result.NEUTRAL;
     }
 }
