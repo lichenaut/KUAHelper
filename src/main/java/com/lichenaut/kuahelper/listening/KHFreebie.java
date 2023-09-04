@@ -4,33 +4,34 @@ import com.lichenaut.kuahelper.KUAHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.persistence.PersistentDataType;
 
 public class KHFreebie implements Listener {
 
     private final KUAHelper plugin;
-    private final FixedMetadataValue value;
+    private final NamespacedKey key;
 
     public KHFreebie(KUAHelper plugin) {
         this.plugin = plugin;
-        value = new FixedMetadataValue(plugin, true);
+        key = new NamespacedKey(plugin, "freebiekey");
     }
 
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.LOWEST)
     public void onFirstDeath(PlayerDeathEvent e) {
-        if (e.getEntity().getKiller() != null) return; // Freebie doesn't apply if you were killed by another player
-
         Player p = e.getEntity();
-        if (p.hasMetadata("freebie")) return;
+        if (p.getKiller() != null) return; // Freebie doesn't apply if you were killed by another player
+        if (p.getPersistentDataContainer().has(key, PersistentDataType.STRING)) return;
 
         e.setCancelled(true);
-        p.setMetadata("freebie", value);
+        p.getPersistentDataContainer().set(key, PersistentDataType.STRING, "freebie");
+
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             Location destination = p.getBedSpawnLocation();
             if (destination == null) destination = p.getWorld().getSpawnLocation();
