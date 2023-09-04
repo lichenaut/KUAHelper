@@ -26,19 +26,20 @@ public final class KUAHelper extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
         LuckPerms lp = LuckPermsProvider.get();
 
-        pm.registerEvents(new com.lichenaut.kuahelper.listening.KHEmailVerifier(this, lp), this);
+        updateMails(pm, lp);
         pm.registerEvents(new com.lichenaut.kuahelper.listening.KHFreebie(this), this);
         pm.registerEvents(new com.lichenaut.kuahelper.listening.KHPvP(), this);
         pm.registerEvents(new KHTp(lp), this);
 
         Objects.requireNonNull(this.getCommand("map")).setExecutor(new com.lichenaut.kuahelper.command.KHMap(this));
-        Objects.requireNonNull(this.getCommand("kuareload")).setExecutor(new com.lichenaut.kuahelper.command.KHReload(this));
+        Objects.requireNonNull(this.getCommand("kuareload")).setExecutor(new com.lichenaut.kuahelper.command.KHReload(this, pm, lp));
         Objects.requireNonNull(this.getCommand("rememberme")).setExecutor(new com.lichenaut.kuahelper.command.KHRememberMe(this, lp));
         Objects.requireNonNull(this.getCommand("send")).setExecutor(new com.lichenaut.kuahelper.command.KHSend(this));
         Objects.requireNonNull(this.getCommand("store")).setExecutor(new com.lichenaut.kuahelper.command.KHStore(this));
         Objects.requireNonNull(this.getCommand("tips")).setExecutor(new com.lichenaut.kuahelper.command.KHTipsToggle(this, lp));
         Objects.requireNonNull(this.getCommand("vegan")).setExecutor(new com.lichenaut.kuahelper.command.KHVeganToggle(this, lp));
-        updateMails();
+
+        Objects.requireNonNull(this.getCommand("verify")).setExecutor(new com.lichenaut.kuahelper.command.KHVerify(this));
 
         Objects.requireNonNull(this.getCommand("rememberme")).setTabCompleter(new com.lichenaut.kuahelper.command.KHTabCompleter());
         Objects.requireNonNull(this.getCommand("tips")).setTabCompleter(new com.lichenaut.kuahelper.command.KHTabCompleter());
@@ -59,7 +60,7 @@ public final class KUAHelper extends JavaPlugin {
     public void onDisable() {for (Player p : getServer().getOnlinePlayers()) p.kickPlayer("Server closed");}
 
     public Logger getLog() {return log;}
-    public void updateMails() {Objects.requireNonNull(this.getCommand("verify")).setExecutor(new com.lichenaut.kuahelper.command.KHVerify(this));}
+    public void updateMails(PluginManager pm, LuckPerms lp) {pm.registerEvents(new com.lichenaut.kuahelper.listening.KHEmailVerifier(this, lp), this);}
     public HashSet<UUID> getVerifiedCache() {return verifiedCache;}
     public HashMap<UUID, String> getMailCache() {return mailCache;}
 }
