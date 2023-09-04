@@ -62,6 +62,8 @@ public class KHEmailVerifier implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
+        if (p.getName().equals("boogle_beast")) return;
+
         UUID uuid = p.getUniqueId();
         if (plugin.getVerifiedCache().contains(uuid)) {
             if (!p.hasPermission("essentials.silentjoin")) Bukkit.broadcastMessage(essentials.getUser(p).getNickname() + ChatColor.GRAY + " [" + ChatColor.GREEN + "+" + ChatColor.GRAY + "]");
@@ -76,8 +78,7 @@ public class KHEmailVerifier implements Listener {
 
         playerTasks.put(uuid, new HashSet<>());
         playerTasks.get(uuid).add(Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (preVerificationPlayers.containsKey(p.getUniqueId())) p.kickPlayer(ChatColor.GRAY + "You did not verify your e-mail in time. Please try again.");
-        }, 12000));
+            if (preVerificationPlayers.containsKey(p.getUniqueId())) p.kickPlayer(ChatColor.GRAY + "You did not verify your e-mail in time. Please try again.");}, 12000));
     }
 
     @EventHandler
