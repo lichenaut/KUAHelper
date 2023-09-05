@@ -41,8 +41,10 @@ public class KHEmailVerifier implements Listener {
     private final HashMap<UUID, HashSet<BukkitTask>> playerTasks;
     private final PotionEffect BLINDNESS;
     private final String password;
+    private final String serverEmail;
+    private final Message message;
 
-    public KHEmailVerifier(KUAHelper plugin, LuckPerms lp) {
+    public KHEmailVerifier(KUAHelper plugin, LuckPerms lp) throws MessagingException {
         this.plugin = plugin;
         this.lp = lp;
         essentials = (Essentials) plugin.getServer().getPluginManager().getPlugin("Essentials");
@@ -57,6 +59,23 @@ public class KHEmailVerifier implements Listener {
         BLINDNESS = new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 1, false, false, false);
         try {password = Files.readString(Path.of(plugin.getDataFolder() + FileSystems.getDefault().getSeparator() + "error_id.txt"), StandardCharsets.UTF_8);
         } catch (IOException e) {throw new RuntimeException(e);}
+
+        Properties properties = new Properties();
+        properties.put("mail.smtp.host", "smtp.gmail.com");
+        properties.put("mail.smtp.port", "465");
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        serverEmail = "5kua.verifier@gmail.com";
+        Session session = Session.getInstance(properties, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(serverEmail, password);
+            }
+        });
+        message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(serverEmail));
+        message.setSubject("Verification Code");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -118,7 +137,7 @@ public class KHEmailVerifier implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onCommandPreprocess(PlayerCommandPreprocessEvent e) {
+    public void onCommandPreprocess(PlayerCommandPreprocessEvent e) throws MessagingException {
         Player p = e.getPlayer();
         UUID uuid = p.getUniqueId();
         if (!preVerificationPlayers.containsKey(uuid)) return;
@@ -211,38 +230,17 @@ public class KHEmailVerifier implements Listener {
         if (preVerificationPlayers.containsKey(e.getPlayer().getUniqueId())) e.setCancelled(true);
     }
 
-    private void sendEmail(Player p, String email) {
-        Properties properties  = new Properties();
-        properties.put("mail.smtp.host", "smtp.gmail.com");
-        properties.put("mail.smtp.port", "465");
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-
-        String serverEmail = "5kua.verifier@gmail.com";
-        Session session = Session.getInstance(properties, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {return new PasswordAuthentication(serverEmail, password);}
-        });
-
+    private void sendEmail(Player p, String email) throws MessagingException {
         String code = String.format("%06d", new Random().nextInt(999999));
-        try {
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(serverEmail));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
-            message.setSubject("Verification Code");
-            message.setText(code + "\n \nSent by Minecraft server '5kUA: Denver Collegiate Minecraft'. If you did not request this code, please ignore this e-mail.");
-            Transport.send(message);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            return;
-        }
+        message.setRecipient(Message.RecipientType.TO, new InternetAddress(email));
+        message.setText(code + "\n \nSent by Minecraft server '5kUA: Denver Collegiate Minecraft'. If you did not request this code, please ignore this e-mail.");
+        Transport.send(message);
 
         UUID uuid = p.getUniqueId();
         plugin.getMailCache().put(uuid, email);
         verificationCodes.put(uuid, code);
         playerTasks.get(uuid).add(Bukkit.getScheduler().runTaskLater(plugin, () -> verificationCodes.remove(uuid), 6000));
-        p.sendMessage(ChatColor.GREEN + "Sent! The code is valid for five minutes.");
+        p.sendMessage(ChatColor.GREEN + "Sent! Please also check your \"Junk\" folder.");
     }
 
     private void helperMessage(Player p) {

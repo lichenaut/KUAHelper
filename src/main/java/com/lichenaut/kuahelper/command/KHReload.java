@@ -10,6 +10,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 
+import javax.mail.MessagingException;
+
 @SuppressWarnings("deprecation")
 public class KHReload extends KHCommandUtil implements CommandExecutor {
 
@@ -28,7 +30,7 @@ public class KHReload extends KHCommandUtil implements CommandExecutor {
             messageSender(sender, ChatColor.GRAY + "You do not have permission to use this command.");
             return false;
         }
-        plugin.updateMails(pm, lp);
+        try {plugin.updateMails(pm, lp);} catch (MessagingException e) {throw new RuntimeException(e);}
         return true;
     }
 }

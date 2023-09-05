@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.mail.MessagingException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
@@ -26,7 +27,7 @@ public final class KUAHelper extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
         LuckPerms lp = LuckPermsProvider.get();
 
-        updateMails(pm, lp);
+        try {updateMails(pm, lp);} catch (MessagingException e) {throw new RuntimeException(e);}
         pm.registerEvents(new com.lichenaut.kuahelper.listening.KHFreebie(this), this);
         pm.registerEvents(new com.lichenaut.kuahelper.listening.KHPvP(), this);
         pm.registerEvents(new KHTp(lp), this);
@@ -60,7 +61,7 @@ public final class KUAHelper extends JavaPlugin {
     public void onDisable() {for (Player p : getServer().getOnlinePlayers()) p.kickPlayer("Server closed");}
 
     public Logger getLog() {return log;}
-    public void updateMails(PluginManager pm, LuckPerms lp) {pm.registerEvents(new com.lichenaut.kuahelper.listening.KHEmailVerifier(this, lp), this);}
+    public void updateMails(PluginManager pm, LuckPerms lp) throws MessagingException {pm.registerEvents(new com.lichenaut.kuahelper.listening.KHEmailVerifier(this, lp), this);}
     public HashSet<UUID> getVerifiedCache() {return verifiedCache;}
     public HashMap<UUID, String> getMailCache() {return mailCache;}
 }
