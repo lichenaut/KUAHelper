@@ -36,7 +36,7 @@ public class KHEmailVerifier implements Listener {
     private final LuckPerms lp;
     private final Essentials essentials;
     private final HashMap<String, InheritanceNode> validUnis;
-    private final HashMap<UUID, GameMode> preVerificationPlayers;
+    private final HashSet<UUID> preVerificationPlayers;
     private final HashMap<UUID, String> verificationCodes;
     private final HashMap<UUID, HashSet<BukkitTask>> playerTasks;
     private final PotionEffect BLINDNESS;
@@ -53,7 +53,7 @@ public class KHEmailVerifier implements Listener {
                     .map(line -> line.split(",", 2))
                     .collect(Collectors.toMap(parts -> parts[0], parts -> InheritanceNode.builder(parts[1]).build()));
         } catch (IOException e) {throw new RuntimeException(e);}
-        preVerificationPlayers = new HashMap<>();
+        preVerificationPlayers = new HashSet<>();
         verificationCodes = new HashMap<>();
         playerTasks = new HashMap<>();
         BLINDNESS = new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 1, false, false, false);
@@ -90,14 +90,14 @@ public class KHEmailVerifier implements Listener {
         }
 
         p.setOp(false);
-        preVerificationPlayers.put(p.getUniqueId(), p.getGameMode());
+        preVerificationPlayers.add(p.getUniqueId());
         p.addPotionEffect(BLINDNESS);
         p.setGameMode(GameMode.SPECTATOR);
         helperMessage(p);
 
         playerTasks.put(uuid, new HashSet<>());
         playerTasks.get(uuid).add(Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (preVerificationPlayers.containsKey(p.getUniqueId())) p.kickPlayer(ChatColor.GRAY + "You did not verify your e-mail in time. Please try again.");}, 12000));
+            if (preVerificationPlayers.contains(p.getUniqueId())) p.kickPlayer(ChatColor.GRAY + "You did not verify your e-mail in time. Please try again.");}, 12000));
     }
 
     @EventHandler
@@ -140,7 +140,7 @@ public class KHEmailVerifier implements Listener {
     public void onCommandPreprocess(PlayerCommandPreprocessEvent e) throws MessagingException {
         Player p = e.getPlayer();
         UUID uuid = p.getUniqueId();
-        if (!preVerificationPlayers.containsKey(uuid)) return;
+        if (!preVerificationPlayers.contains(uuid)) return;
 
         String msg = e.getMessage();
         if (msg.startsWith("/send ")) {
@@ -180,7 +180,7 @@ public class KHEmailVerifier implements Listener {
             String code = msg.split(" ")[1];
             if (code.equals(verificationCodes.get(uuid))) {
                 p.removePotionEffect(PotionEffectType.BLINDNESS);
-                p.setGameMode(preVerificationPlayers.get(uuid));
+                if (!p.hasPermission("essentials.silentjoin")) p.setGameMode(GameMode.SURVIVAL);
                 preVerificationPlayers.remove(uuid);
                 verificationCodes.remove(uuid);
                 if (p.hasPermission("kuahelper.eighthours")) {
@@ -219,7 +219,7 @@ public class KHEmailVerifier implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerChat(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
-        if (preVerificationPlayers.containsKey(p.getUniqueId())) {
+        if (preVerificationPlayers.contains(p.getUniqueId())) {
             e.setCancelled(true);
             helperMessage(p);
         }
@@ -227,7 +227,7 @@ public class KHEmailVerifier implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerMove(PlayerMoveEvent e) {
-        if (preVerificationPlayers.containsKey(e.getPlayer().getUniqueId())) e.setCancelled(true);
+        if (preVerificationPlayers.contains(e.getPlayer().getUniqueId())) e.setCancelled(true);
     }
 
     private void sendEmail(Player p, String email) throws MessagingException {
